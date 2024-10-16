@@ -1,0 +1,41 @@
+--- a/sta.c
++++ b/sta.c
+@@ -117,7 +117,7 @@ out:
+ 	return ret;
+ }
+ 
+-void xradio_stop(struct ieee80211_hw *dev)
++void xradio_stop(struct ieee80211_hw *dev, bool suspend)
+ {
+ 	struct xradio_common *hw_priv = dev->priv;
+ 	struct xradio_vif *priv = NULL;
+diff --git a/sta.h b/sta.h
+index 884d9c7..fc6fa5e 100644
+--- a/sta.h
++++ b/sta.h
+@@ -31,7 +31,7 @@
+ /* mac80211 API								*/
+ 
+ int xradio_start(struct ieee80211_hw *dev);
+-void xradio_stop(struct ieee80211_hw *dev);
++void xradio_stop(struct ieee80211_hw *dev, bool suspend);
+ int xradio_add_interface(struct ieee80211_hw *dev, struct ieee80211_vif *vif);
+ void xradio_remove_interface(struct ieee80211_hw *dev, struct ieee80211_vif *vif);
+ int xradio_change_interface(struct ieee80211_hw *dev,
+diff --git a/tx.c b/tx.c
+index fd31541..b9bfb8b 100644
+--- a/tx.c
++++ b/tx.c
+@@ -1268,11 +1268,7 @@ void xradio_skb_dtor(struct xradio_common *hw_priv,
+ 				txpriv->raw_link_id, txpriv->tid);
+ 		tx_policy_put(hw_priv, txpriv->rate_id);
+ 	}
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
+ 	ieee80211_tx_status_skb(hw_priv->hw, skb);
+-#else
+-	ieee80211_tx_status(hw_priv->hw, skb);
+-#endif
+ }
+ 
+ #if defined(CONFIG_XRADIO_USE_EXTENSIONS)
+
